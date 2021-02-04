@@ -1,0 +1,26 @@
+{
+    "name": "ging-dev/facebook-tool",
+    "description": "Facebook Tool for PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ging-dev",
+            "email": "gingdz11012001@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "fabpot/goutte": "^4.0",
+        "symfony/console": "^5.2",
+        "symfony/cache": "^5.2",
+        "facebook/graph-sdk": "^5.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gingdev\\": "src/",
+            "Gingdev\\Facebook\\": "src/"
+        }
+    },
+    "bin": ["bin/console"]
+}
