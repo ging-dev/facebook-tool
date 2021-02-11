@@ -22,22 +22,20 @@ composer require ging-dev/facebook-tool dev-main
 ```php
 <?php
 
-use Gingdev\Facebook;
+use Gingdev\Facebook\Facebook;
+use Facebook\FacebookSession;
+use Facebook\FacebookRequestException;
 
 require __DIR__.'/vendor/autoload.php';
 
-$fb = new Facebook();
-$fb->setSession('default');
+FacebookSession::enableAppSecretProof(false);
+$fb = new Facebook('default');
 
 // Get user info
 try {
-    $response = $fb->get('/me');
-} catch(\Facebook\Exceptions\FacebookResponseException $e) {
+    $response = $fb->request('GET', '/me')->execute();
+} catch(FacebookRequestException $e) {
     echo 'Graph returned an error: ' . $e->getMessage();
     exit;
 }
-
-$me = $response->getGraphUser();
-
-echo 'Logged in as ' . $me->getName();
 ```
