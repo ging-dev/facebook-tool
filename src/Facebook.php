@@ -2,40 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Gingdev;
+namespace Gingdev\Facebook;
 
-use Facebook\Authentication\AccessToken;
+use Facebook\FacebookRequest;
+use Facebook\FacebookSession;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
-class Facebook extends \Facebook\Facebook
+class Facebook
 {
-    public function __construct(array $config = [])
-    {
-        $config = array_merge([
-            'app_id' => 'app_id',
-            'app_secret' => 'app_secret',
-        ], $config);
+    protected $session;
 
-        parent::__construct($config);
-    }
-
-    public function request($method, $endpoint, array $params = [], $accessToken = null, $eTag = null, $graphVersion = null)
-    {
-        $accessToken = $accessToken ?: $this->defaultAccessToken;
-        $graphVersion = $graphVersion ?: $this->defaultGraphVersion;
-
-        return new FacebookRequest(
-            $this->app,
-            $accessToken,
-            $method,
-            $endpoint,
-            $params,
-            $eTag,
-            $graphVersion
-        );
-    }
-
-    public function setSession(string $name)
+    public function __construct(string $name)
     {
         $cache = new FilesystemAdapter();
 
@@ -45,6 +22,16 @@ class Facebook extends \Facebook\Facebook
             throw new \LogicException(sprintf('Session "facebook.%s" does not exist.', $name));
         }
 
-        $this->defaultAccessToken = new AccessToken($session->get());
+        $this->session = new FacebookSession($session->get());
+    }
+
+    public function request(string $method, string $path, array $parameters = [])
+    {
+        return new FacebookRequest(
+            $this->session,
+            $method,
+            $path,
+            $parameters
+        );
     }
 }

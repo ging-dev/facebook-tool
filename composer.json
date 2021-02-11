@@ -14,11 +14,10 @@
         "fabpot/goutte": "^4.0",
         "symfony/console": "^5.2",
         "symfony/cache": "^5.2",
-        "facebook/graph-sdk": "^5.7"
+        "facebook/graph-sdk": "^4"
     },
     "autoload": {
         "psr-4": {
-            "Gingdev\\": "src/",
             "Gingdev\\Facebook\\": "src/"
         }
     },
