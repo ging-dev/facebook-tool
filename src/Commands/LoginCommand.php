@@ -2,8 +2,8 @@
 
 namespace Gingdev\Facebook\Commands;
 
-use Goutte\Client;
 use Gingdev\Facebook\Facebook;
+use Goutte\Client;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -86,7 +86,7 @@ class LoginCommand extends Command
      *
      * @return void
      */
-    protected function nextStep(InputInterface $input, OutputInterface $output)
+    protected function nextStep(InputInterface $input, OutputInterface $output, int $failed = 0)
     {
         $helper = $this->getHelper('question');
 
@@ -101,12 +101,17 @@ class LoginCommand extends Command
         $this->client->submit($form);
 
         try {
-            $this->dontSave();
-            $this->endStep();
-        } catch (\InvalidArgumentException $e) {
+            $this->client->getCrawler()
+                ->selectButton('submit[Submit Code]')
+                ->form();
+            if (++$failed > 1) {
+                throw new \RuntimeException('Login failed, you entered incorrectly too many times.');
+            }
             $output->writeln('<fg=red>The recovery code is not correct, please re-enter it</>');
             // Re-enter the recovery code if it is not correct
-            $this->nextStep($input, $output);
+            $this->nextStep($input, $output, $failed);
+        } catch (\InvalidArgumentException $e) {
+            $this->endStep();
         }
     }
 
@@ -118,6 +123,7 @@ class LoginCommand extends Command
     protected function endStep()
     {
         try {
+            $this->dontSave();
             $this->client->submitForm('submit[Continue]');
             $this->client->submitForm('submit[This was me]');
             $this->dontSave();
@@ -137,7 +143,13 @@ class LoginCommand extends Command
     {
         $cache = new PhpFilesAdapter('', 0, Facebook::CACHE_DIR);
 
-        $this->login($input, $output);
+        try {
+            $this->login($input, $output);
+        } catch (\RuntimeException $e) {
+            $output->writeln('<fg=red>'.$e->getMessage().'</>');
+
+            return Command::FAILURE;
+        }
 
         $this->client->request('GET', self::TOKEN_URL.'?'.http_build_query($this->queryData));
         $this->client->followRedirects(false);
