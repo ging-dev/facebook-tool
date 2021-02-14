@@ -3,7 +3,8 @@
 namespace Gingdev\Facebook\Commands;
 
 use Goutte\Client;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Gingdev\Facebook\Facebook;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,7 +44,7 @@ class LoginCommand extends Command
     {
         $this->setDescription('Login facebook.')
             ->setHelp('This command allows you to login to a facebook account...')
-            ->addArgument('name', InputArgument::REQUIRED, 'Cookie name?');
+            ->addArgument('name', InputArgument::OPTIONAL, 'Cookie name?');
     }
 
     /**
@@ -134,7 +135,7 @@ class LoginCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cache = new FilesystemAdapter();
+        $cache = new PhpFilesAdapter('', 0, Facebook::CACHE_DIR);
 
         $this->login($input, $output);
 
@@ -156,7 +157,8 @@ class LoginCommand extends Command
             $data
         );
 
-        $account = $cache->getItem('facebook.'.$input->getArgument('name'));
+        $name = $input->getArgument('name') ?? 'default';
+        $account = $cache->getItem($name);
         $account->set($data['access_token']);
 
         $cache->save($account);

@@ -6,20 +6,22 @@ namespace Gingdev\Facebook;
 
 use Facebook\FacebookRequest;
 use Facebook\FacebookSession;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class Facebook
 {
+    const CACHE_DIR = __DIR__.'/../cache';
+
     protected $session;
 
-    public function __construct(string $name)
+    public function __construct(string $name = 'default')
     {
-        $cache = new FilesystemAdapter();
+        $cache = new PhpFilesAdapter('', 0, self::CACHE_DIR);
 
-        $session = $cache->getItem('facebook.'.$name);
+        $session = $cache->getItem($name);
 
         if (!$session->isHit()) {
-            throw new \LogicException(sprintf('Session "facebook.%s" does not exist.', $name));
+            throw new \LogicException(sprintf('Session "%s" does not exist.', $name));
         }
 
         $this->session = new FacebookSession($session->get());

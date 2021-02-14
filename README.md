@@ -17,7 +17,7 @@ composer require ging-dev/facebook-tool
 ## Login
 
 ```sh
-./vendor/bin/console facebook:login default
+./vendor/bin/console facebook:login
 ```
 
 ```php
