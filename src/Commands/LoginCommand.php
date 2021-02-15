@@ -72,13 +72,13 @@ class LoginCommand extends Command
             'pass' => $password,
         ]);
 
-        try {
-            $this->nextStep($input, $output);
-        } catch (\InvalidArgumentException $e) {
-            $output->writeln('<fg=red>Login failed, please re-enter</>');
-            // Re-login
-            $this->login($input, $output);
+        if ($this->filter('#approvals_code')) {
+            return $this->nextStep($input, $output);
         }
+
+        $output->writeln('<fg=red>Login failed, please re-enter</>');
+        // Re-login
+        return $this->login($input, $output);
     }
 
     /**
@@ -89,30 +89,24 @@ class LoginCommand extends Command
     protected function nextStep(InputInterface $input, OutputInterface $output, int $failed = 0)
     {
         $helper = $this->getHelper('question');
-
-        $form = $this->client->getCrawler()
-            ->selectButton('submit[Submit Code]')
-            ->form();
-
         $question = new Question('Enter 2-FA code: ');
         $code = $helper->ask($input, $output, $question);
 
-        $form['approvals_code'] = $code;
-        $this->client->submit($form);
+        $this->client->submitForm('submit[Submit Code]', [
+            'approvals_code' => $code,
+        ]);
 
-        try {
-            $this->client->getCrawler()
-                ->selectButton('submit[Submit Code]')
-                ->form();
+        if ($this->filter('#approvals_code')) {
             if (++$failed > 1) {
                 throw new \RuntimeException('Login failed, you entered incorrectly too many times.');
             }
+
             $output->writeln('<fg=red>The recovery code is not correct, please re-enter it</>');
             // Re-enter the recovery code if it is not correct
-            $this->nextStep($input, $output, $failed);
-        } catch (\InvalidArgumentException $e) {
-            $this->endStep();
+            return $this->nextStep($input, $output, $failed);
         }
+
+        return $this->endStep();
     }
 
     /**
@@ -124,12 +118,17 @@ class LoginCommand extends Command
     {
         try {
             $this->dontSave();
-            $this->client->submitForm('submit[Continue]');
-            $this->client->submitForm('submit[This was me]');
+            $this->continue();
             $this->dontSave();
         } catch (\InvalidArgumentException $e) {
             // Finish without checking the browser
         }
+    }
+
+    protected function continue()
+    {
+        $this->client->submitForm('submit[Continue]');
+        $this->client->submitForm('submit[This was me]');
     }
 
     protected function dontSave()
@@ -137,6 +136,13 @@ class LoginCommand extends Command
         $this->client->submitForm('submit[Continue]', [
             'name_action_selected' => 'dont_save',
         ]);
+    }
+
+    protected function filter($input)
+    {
+        $crawler = $this->client->getCrawler()->filter($input);
+
+        return $crawler->count() > 0;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -176,6 +182,7 @@ class LoginCommand extends Command
         $cache->save($account);
 
         $output->writeln('<fg=green>Logged in successfully</>');
+        $output->writeln('Access token: '.$data['access_token']);
 
         return Command::SUCCESS;
     }
