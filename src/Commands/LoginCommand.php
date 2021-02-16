@@ -4,7 +4,6 @@ namespace Gingdev\Facebook\Commands;
 
 use Gingdev\Facebook\Facebook;
 use Goutte\Client;
-use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +19,6 @@ class LoginCommand extends Command
     protected $queryData = [
         'client_id' => '124024574287414',
         'redirect_uri' => 'fbconnect://success',
-        'scope' => 'email,publish_actions,publish_pages,user_about_me,user_actions.books,user_actions.music,user_actions.news,user_actions.video,user_activities,user_birthday,user_education_history,user_events,user_games_activity,user_groups,user_hometown,user_interests,user_likes,user_location,user_notes,user_photos,user_questions,user_relationship_details,user_relationships,user_religion_politics,user_status,user_subscriptions,user_videos,user_website,user_work_history,friends_about_me,friends_actions.books,friends_actions.music,friends_actions.news,friends_actions.video,friends_activities,friends_birthday,friends_education_history,friends_events,friends_games_activity,friends_groups,friends_hometown,friends_interests,friends_likes,friends_location,friends_notes,friends_photos,friends_questions,friends_relationship_details,friends_relationships,friends_religion_politics,friends_status,friends_subscriptions,friends_videos,friends_website,friends_work_history,ads_management,create_event,create_note,export_stream,friends_online_presence,manage_friendlists,manage_notifications,manage_pages,photo_upload,publish_stream,read_friendlists,read_insights,read_mailbox,read_page_mailboxes,read_requests,read_stream,rsvp_event,share_item,sms,status_update,user_online_presence,video_upload,xmpp_login',
         'response_type' => 'token',
     ];
 
@@ -72,8 +70,11 @@ class LoginCommand extends Command
             'pass' => $password,
         ]);
 
-        if ($this->filter('#approvals_code')) {
-            return $this->nextStep($input, $output);
+        if ($this->filter('#checkpoint_title')) {
+            if ($this->filter('#approvals_code')) {
+                return $this->nextStep($input, $output);
+            }
+            throw new \RuntimeException('You must enable 2-factor authentication.');
         }
 
         $output->writeln('<fg=red>Login failed, please re-enter</>');
@@ -147,7 +148,7 @@ class LoginCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cache = new PhpFilesAdapter('', 0, Facebook::CACHE_DIR);
+        $cache = Facebook::getCache();
 
         try {
             $this->login($input, $output);
