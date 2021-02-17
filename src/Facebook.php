@@ -10,8 +10,14 @@ use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 
 class Facebook
 {
+    /**
+     * @var FacebookSession|null
+     */
     protected $session;
 
+    /**
+     * @throws \LogicException
+     */
     public function __construct(string $name = 'default')
     {
         $cache = self::getCache();
@@ -25,6 +31,9 @@ class Facebook
         $this->session = new FacebookSession($session->get());
     }
 
+    /**
+     * @return FacebookRequest
+     */
     public function request(string $method, string $path, array $parameters = [])
     {
         return new FacebookRequest(
@@ -35,6 +44,9 @@ class Facebook
         );
     }
 
+    /**
+     * @return PhpFilesAdapter
+     */
     public static function getCache()
     {
         return new PhpFilesAdapter('cache', 0, __DIR__);
