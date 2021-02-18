@@ -19,7 +19,7 @@ class LoginCommand extends Command
     protected $queryData = [
         'client_id' => '124024574287414',
         'redirect_uri' => 'fbconnect://success',
-        'scope' => 'user_about_me,user_actions.books,user_actions.fitness,user_actions.music,user_actions.news,user_actions.video,user_activities,user_birthday,user_education_history,user_events,user_friends,user_games_activity,user_groups,user_hometown,user_interests,user_likes,user_location,user_managed_groups,user_photos,user_posts,user_relationship_details,user_relationships,user_religion_politics,user_status,user_tagged_places,user_videos,user_website,user_work_history,email,manage_notifications,manage_pages,publish_actions,publish_pages,read_insights,read_page_mailboxes,read_stream,rsvp_event,read_mailbox',
+        'scope' => 'email,read_insights,read_audience_network_insights,rsvp_event,offline_access,publish_video,openid,catalog_management,user_managed_groups,groups_show_list,pages_manage_cta,pages_manage_instant_articles,pages_show_list,pages_messaging,pages_messaging_phone_number,pages_messaging_subscriptions,read_page_mailboxes,ads_management,ads_read,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,publish_to_groups,groups_access_member_info,leads_retrieval,whatsapp_business_management,attribution_read,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_ads,pages_manage_posts,pages_manage_engagement,audience_network_placement_management,public_profile',
         'response_type' => 'token',
     ];
 
@@ -178,10 +178,11 @@ class LoginCommand extends Command
         );
 
         $name = $input->getArgument('name') ?? 'default';
-        $account = $cache->getItem($name);
-        $account->set($data['access_token']);
 
-        $cache->save($account);
+        $token = $cache->getItem($name);
+        $token->set($data['access_token']);
+
+        $cache->save($token);
 
         $output->writeln('<fg=green>Logged in successfully</>');
         $output->writeln('Access token: '.$data['access_token']);

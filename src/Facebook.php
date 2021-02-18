@@ -31,23 +31,21 @@ class Facebook
         $this->session = new FacebookSession($session->get());
     }
 
-    /**
-     * @return FacebookRequest
-     */
-    public function request(string $method, string $path, array $parameters = [])
-    {
+    public function request(
+        string $method,
+        string $path,
+        array $parameters = []
+    ): FacebookRequest {
         return new FacebookRequest(
             $this->session,
             $method,
             $path,
-            $parameters
+            $parameters,
+            'v1.0'
         );
     }
 
-    /**
-     * @return PhpFilesAdapter
-     */
-    public static function getCache()
+    public static function getCache(): PhpFilesAdapter
     {
         return new PhpFilesAdapter('cache', 0, __DIR__);
     }

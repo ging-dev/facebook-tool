@@ -16,10 +16,12 @@ foreach ($possibleAutoloadPaths as $possibleAutoloadPath) {
 }
 
 use Gingdev\Facebook\Command\LoginCommand;
+use Gingdev\Facebook\Command\ShieldCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 
 $application->add(new LoginCommand());
+$application->add(new ShieldCommand());
 
 $application->run();
