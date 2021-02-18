@@ -15,7 +15,7 @@ foreach ($possibleAutoloadPaths as $possibleAutoloadPath) {
     }
 }
 
-use Gingdev\Facebook\Commands\LoginCommand;
+use Gingdev\Facebook\Command\LoginCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();

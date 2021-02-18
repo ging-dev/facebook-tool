@@ -1,6 +1,6 @@
 <?php
 
-namespace Gingdev\Facebook\Commands;
+namespace Gingdev\Facebook\Command;
 
 use Gingdev\Facebook\Facebook;
 use Goutte\Client;
