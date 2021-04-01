@@ -21,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Gingdev\\Facebook\\": "src/"
+            "Gingdev\\Facebook\\": ""
         }
     },
     "bin": ["bin/console"]
