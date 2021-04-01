@@ -1,0 +1,5 @@
+services:
+    Gingdev\Facebook\Command\LoginCommand:
+        tags: ['console.command']
+    Gingdev\Facebook\Command\ShieldCommand:
+        tags: ['console.command']

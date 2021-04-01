@@ -41,7 +41,7 @@ class LoginCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription('Login facebook.')
+        $this->setDescription('Login to facebook')
             ->setHelp('This command allows you to login to a facebook account...')
             ->addArgument('name', InputArgument::OPTIONAL, 'Cookie name?');
     }

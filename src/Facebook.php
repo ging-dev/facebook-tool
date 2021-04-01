@@ -40,8 +40,7 @@ class Facebook
             $this->session,
             $method,
             $path,
-            $parameters,
-            'v1.0'
+            $parameters
         );
     }
 
