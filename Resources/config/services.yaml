@@ -1,5 +1,9 @@
 services:
-    Gingdev\Facebook\Command\LoginCommand:
-        tags: ['console.command']
-    Gingdev\Facebook\Command\ShieldCommand:
-        tags: ['console.command']
+
+    _instanceof:
+        Symfony\Component\Console\Command\Command:
+            tags: ['console.command']
+            public: true
+
+    Gingdev\Facebook\Command\:
+        resource: ../../Command
