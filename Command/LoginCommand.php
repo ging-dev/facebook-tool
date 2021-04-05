@@ -2,26 +2,18 @@
 
 namespace Gingdev\Facebook\Command;
 
-use Gingdev\Facebook\Facebook;
 use Goutte\Client;
+use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Yaml\Yaml;
 
 class LoginCommand extends Command
 {
     const BASE_URL = 'https://mbasic.facebook.com/login';
-
-    const TOKEN_URL = 'https://mbasic.facebook.com/dialog/oauth';
-
-    protected $queryData = [
-        'client_id' => '124024574287414',
-        'redirect_uri' => 'fbconnect://success',
-        'scope' => 'email,read_insights,read_audience_network_insights,rsvp_event,offline_access,publish_video,openid,catalog_management,user_managed_groups,groups_show_list,pages_manage_cta,pages_manage_instant_articles,pages_show_list,pages_messaging,pages_messaging_phone_number,pages_messaging_subscriptions,read_page_mailboxes,ads_management,ads_read,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,publish_to_groups,groups_access_member_info,leads_retrieval,whatsapp_business_management,attribution_read,pages_read_engagement,pages_manage_metadata,pages_read_user_content,pages_manage_ads,pages_manage_posts,pages_manage_engagement,audience_network_placement_management,public_profile',
-        'response_type' => 'token',
-    ];
 
     /**
      * Browser Kit.
@@ -43,7 +35,7 @@ class LoginCommand extends Command
     {
         $this->setDescription('Login to facebook')
             ->setHelp('This command allows you to login to a facebook account...')
-            ->addArgument('name', InputArgument::OPTIONAL, 'Cookie name?');
+            ->addArgument('name', InputArgument::OPTIONAL, 'File name');
     }
 
     /**
@@ -93,6 +85,10 @@ class LoginCommand extends Command
         $helper = $this->getHelper('question');
         $question = new Question('Enter 2-FA code: ');
         $code = $helper->ask($input, $output, $question);
+
+        if (strlen($code) >= 32) {
+            $code = (new GoogleAuthenticator())->getCode($code);
+        }
 
         $this->client->submitForm('submit[Submit Code]', [
             'approvals_code' => $code,
@@ -149,8 +145,6 @@ class LoginCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cache = Facebook::getCache();
-
         try {
             $this->login($input, $output);
         } catch (\RuntimeException $e) {
@@ -159,33 +153,15 @@ class LoginCommand extends Command
             return Command::FAILURE;
         }
 
-        $this->client->request('GET', self::TOKEN_URL.'?'.http_build_query($this->queryData));
-        $this->client->followRedirects(false);
+        $cookies = $this->client
+            ->getCookieJar()
+            ->allValues('https://facebook.com');
 
-        $form = $this->client
-            ->getCrawler()
-            ->filter('form')
-            ->form();
-
-        $this->client->submit($form);
-
-        $location = $this->client->getResponse()
-            ->getHeader('location');
-
-        parse_str(
-            parse_url($location, PHP_URL_FRAGMENT),
-            $data
-        );
+        $yaml = Yaml::dump($cookies);
 
         $name = $input->getArgument('name') ?? 'default';
-
-        $token = $cache->getItem($name);
-        $token->set($data['access_token']);
-
-        $cache->save($token);
-
+        file_put_contents(getcwd().DIRECTORY_SEPARATOR.$name.'.yaml', $yaml);
         $output->writeln('<fg=green>Logged in successfully</>');
-        $output->writeln('Access token: '.$data['access_token']);
 
         return Command::SUCCESS;
     }

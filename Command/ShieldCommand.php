@@ -2,8 +2,8 @@
 
 namespace Gingdev\Facebook\Command;
 
+use Facebook\FacebookRequest;
 use Facebook\FacebookSession;
-use Gingdev\Facebook\Facebook;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,25 +19,15 @@ class ShieldCommand extends Command
     {
         FacebookSession::enableAppSecretProof(false);
         $this->setDescription('Activate avatar protection')
-            ->addArgument('name', InputArgument::OPTIONAL, 'Session name?')
+            ->addArgument('token', InputArgument::REQUIRED, 'Access token')
             ->addOption('off', null, InputOption::VALUE_NONE, 'Turn off');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('name') ?? 'default';
-        $cache = Facebook::getCache();
-        $token = $cache->getItem($name);
-
-        if (!$token->isHit()) {
-            $output->writeln('<fg=red>Login first</>');
-
-            return Command::FAILURE;
-        }
-
         try {
-            $facebook = new Facebook($name);
-            $user = $facebook->request('GET', '/me')
+            $session = new FacebookSession($input->getArgument('token'));
+            $user = (new FacebookRequest($session, 'GET', '/me'))
                 ->execute()
                 ->getGraphObject()
                 ->asArray();
@@ -61,7 +51,7 @@ class ShieldCommand extends Command
 
         $client->request('POST', 'https://graph.facebook.com/graphql', [
             'headers' => [
-                'Authorization' => 'OAuth '.$token->get(),
+                'Authorization' => 'OAuth '.$input->getArgument('token'),
             ],
             'body' => [
                 'variables' => json_encode($data),
