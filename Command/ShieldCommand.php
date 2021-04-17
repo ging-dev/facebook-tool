@@ -26,9 +26,11 @@ class ShieldCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            /** @var FacebookSession */
             $session = new FacebookSession($input->getArgument('token'));
-            $user = (new FacebookRequest($session, 'GET', '/me'))
-                ->execute()
+
+            /** @var FacebookRequest */
+            $user = (new FacebookRequest($session, 'GET', '/me'))->execute()
                 ->getGraphObject()
                 ->asArray();
         } catch (\Throwable $e) {

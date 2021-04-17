@@ -13,7 +13,7 @@
     "require": {
         "fabpot/goutte": "^4.0",
         "symfony/console": "^5.2",
-        "facebook/graph-sdk": "^4",
+        "facebook/graph-sdk": "^4.0",
         "symfony/http-kernel": "^5.2",
         "symfony/dependency-injection": "^5.2",
         "symfony/config": "^5.2",

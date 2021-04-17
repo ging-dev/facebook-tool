@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Gingdev\Facebook;
 
 use Goutte\Client;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\Yaml\Yaml;
 
@@ -34,10 +33,7 @@ class Tool
     {
         $cookies = Yaml::parseFile($filename);
         $cookieJar = new CookieJar();
-
-        foreach ($cookies as $name => $value) {
-            $cookieJar->set(new Cookie($name, $value));
-        }
+        $cookieJar->updateFromSetCookie($cookies);
 
         $this->browser = new Client(null, null, $cookieJar);
 
@@ -49,10 +45,14 @@ class Tool
         $this->browser->request('GET', self::TOKEN_URL.'?'.http_build_query($this->queryData));
         $this->browser->followRedirects(false);
 
-        $form = $this->browser
-            ->getCrawler()
-            ->filter('form')
-            ->form();
+        try {
+            $form = $this->browser
+                ->getCrawler()
+                ->filter('.k.j > form')
+                ->form();
+        } catch (\InvalidArgumentException $e) {
+            throw new \LogicException('Cookies have expired or are not valid.');
+        }
 
         $this->browser->submit($form);
 

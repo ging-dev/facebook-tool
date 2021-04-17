@@ -153,9 +153,11 @@ class LoginCommand extends Command
             return Command::FAILURE;
         }
 
-        $cookies = $this->client
-            ->getCookieJar()
-            ->allValues('https://facebook.com');
+        $cookies = [];
+        $cookieJar = $this->client->getCookieJar();
+        foreach ($cookieJar->all() as $cookie) {
+            $cookies[] = (string) $cookie;
+        }
 
         $yaml = Yaml::dump($cookies);
 
