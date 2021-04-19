@@ -25,5 +25,5 @@
             "Gingdev\\Facebook\\": ""
         }
     },
-    "bin": ["bin/console"]
+    "bin": ["Resources/bin/console"]
 }
