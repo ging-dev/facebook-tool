@@ -153,11 +153,8 @@ class LoginCommand extends Command
             return Command::FAILURE;
         }
 
-        $cookies = [];
-        $cookieJar = $this->client->getCookieJar();
-        foreach ($cookieJar->all() as $cookie) {
-            $cookies[] = (string) $cookie;
-        }
+        $cookies = $this->client->getCookieJar()->all();
+        $cookies = array_map('strval', $cookies);
 
         $yaml = Yaml::dump($cookies);
 
