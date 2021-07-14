@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Gingdev\Facebook;
 
 use Goutte\Client;
+use InvalidArgumentException;
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\Yaml\Yaml;
 
@@ -36,8 +37,6 @@ class Tool
         $cookieJar->updateFromSetCookie($cookies);
 
         $this->browser = new Client(null, null, $cookieJar);
-
-        $this->requestAccessToken();
     }
 
     public function requestAccessToken()
@@ -75,5 +74,92 @@ class Tool
     public function getBrowser()
     {
         return $this->browser;
+    }
+
+    public function likePost($id, int $mode = 0)
+    {
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/reactions/picker/?ft_id='.$id);
+
+        try {
+            $link = $crawler->filter('a[style="display:block"]')->eq($mode)->link();
+            $this->browser->click($link);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function likePage($id)
+    {
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
+
+        try {
+            $link = $crawler->filterXPath('//a[contains(@href, "/a/profile.php")]')->link();
+            $this->browser->click($link);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function followPage($id)
+    {
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
+
+        try {
+            $link = $crawler->filter('a[id="pages_follow_action_id"]')->link();
+            $this->browser->click($link);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function followUser($id)
+    {
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
+
+        try {
+            $link = $crawler->filterXPath('//a[contains(@href, "/a/subscribe.php")]')->link();
+            $this->browser->click($link);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function commentPost($id, string $message)
+    {
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/mbasic/comment/advanced/?target_id='.$id.'&at=compose');
+
+        try {
+            $form = $crawler->filter('form')->form();
+            $form->remove('photo'); // watch out for this damn thing
+            $this->browser->submit($form, ['comment_text' => $message]);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function sharePost($id)
+    {
+        // Nah, I hope there will be a quicker solution
+        $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id);
+
+        try {
+            $link = $crawler->filterXPath('//a[contains(@href, "/composer/mbasic")]')->link();
+            $this->browser->click($link);
+            $this->browser->submitForm('view_post');
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+
+        return true;
     }
 }
