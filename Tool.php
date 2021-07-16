@@ -7,7 +7,6 @@ namespace Gingdev\Facebook;
 use Goutte\Client;
 use InvalidArgumentException;
 use Symfony\Component\BrowserKit\CookieJar;
-use Symfony\Component\Yaml\Yaml;
 
 class Tool
 {
@@ -32,7 +31,20 @@ class Tool
 
     public function __construct(string $filename)
     {
-        $cookies = Yaml::parseFile($filename);
+        $json = \file_get_contents($filename);
+        if (false === $json) {
+            throw new \RuntimeException("Unable to load file {$filename}");
+        }
+
+        $cookies = \json_decode($json, true);
+        if (\JSON_ERROR_NONE !== \json_last_error()) {
+            throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
+        }
+
+        if (!\is_array($cookies)) {
+            throw new \RuntimeException("Invalid cookie file: {$filename}");
+        }
+
         $cookieJar = new CookieJar();
         $cookieJar->updateFromSetCookie($cookies);
 

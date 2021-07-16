@@ -5,11 +5,9 @@ namespace Gingdev\Facebook\Command;
 use Goutte\Client;
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Yaml\Yaml;
 
 class LoginCommand extends Command
 {
@@ -34,8 +32,7 @@ class LoginCommand extends Command
     protected function configure()
     {
         $this->setDescription('Login to facebook')
-            ->setHelp('This command allows you to login to a facebook account...')
-            ->addArgument('name', InputArgument::OPTIONAL, 'File name');
+            ->setHelp('This command allows you to login to a facebook account...');
     }
 
     /**
@@ -154,12 +151,10 @@ class LoginCommand extends Command
         }
 
         $cookies = $this->client->getCookieJar()->all();
-        $cookies = array_map('strval', $cookies);
+        $cookies = \array_map('strval', $cookies);
+        $cookies = \json_encode($cookies);
 
-        $yaml = Yaml::dump($cookies);
-
-        $name = $input->getArgument('name') ?? 'default';
-        file_put_contents(getcwd().DIRECTORY_SEPARATOR.$name.'.yaml', $yaml);
+        \file_put_contents(getcwd().DIRECTORY_SEPARATOR.'cookies.json', $cookies);
         $output->writeln('<fg=green>Logged in successfully</>');
 
         return Command::SUCCESS;
