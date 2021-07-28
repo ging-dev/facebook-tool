@@ -6,6 +6,6 @@ namespace Gingdev\Facebook;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class FacebookBundle extends Bundle
+final class FacebookBundle extends Bundle
 {
 }

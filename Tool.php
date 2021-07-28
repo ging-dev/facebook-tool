@@ -10,7 +10,7 @@ use Symfony\Component\BrowserKit\CookieJar;
 
 class Tool
 {
-    const TOKEN_URL = 'https://mbasic.facebook.com/dialog/oauth';
+    public const TOKEN_URL = 'https://mbasic.facebook.com/dialog/oauth';
 
     protected $queryData = [
         'client_id' => '124024574287414',
@@ -19,15 +19,9 @@ class Tool
         'response_type' => 'token',
     ];
 
-    /**
-     * @var string
-     */
-    protected $accessToken;
+    protected string $accessToken;
 
-    /**
-     * @var Client
-     */
-    protected $browser;
+    protected Client $browser;
 
     public function __construct(string $filename)
     {
@@ -51,7 +45,7 @@ class Tool
         $this->browser = new Client(null, null, $cookieJar);
     }
 
-    public function requestAccessToken()
+    public function requestAccessToken(): void
     {
         $this->browser->request('GET', self::TOKEN_URL.'?'.http_build_query($this->queryData));
         $this->browser->followRedirects(false);
@@ -78,17 +72,17 @@ class Tool
         $this->accessToken = $data['access_token'];
     }
 
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         return $this->accessToken;
     }
 
-    public function getBrowser()
+    public function getBrowser(): Client
     {
         return $this->browser;
     }
 
-    public function likePost($id, int $mode = 0)
+    public function likePost($id, int $mode = 0): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/reactions/picker/?ft_id='.$id);
 
@@ -102,7 +96,7 @@ class Tool
         return true;
     }
 
-    public function likePage($id)
+    public function likePage($id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -116,7 +110,7 @@ class Tool
         return true;
     }
 
-    public function followPage($id)
+    public function followPage($id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -130,7 +124,7 @@ class Tool
         return true;
     }
 
-    public function followUser($id)
+    public function followUser($id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -144,7 +138,7 @@ class Tool
         return true;
     }
 
-    public function commentPost($id, string $message)
+    public function commentPost($id, string $message): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/mbasic/comment/advanced/?target_id='.$id.'&at=compose');
 
@@ -159,7 +153,7 @@ class Tool
         return true;
     }
 
-    public function sharePost($id)
+    public function sharePost($id): bool
     {
         // Nah, I hope there will be a quicker solution
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id);

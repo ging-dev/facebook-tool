@@ -9,9 +9,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class FacebookExtension extends Extension
+final class FacebookExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $_, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader(
             $container,

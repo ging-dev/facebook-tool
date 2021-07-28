@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gingdev\Facebook\Command;
 
 use Facebook\FacebookRequest;
@@ -15,7 +17,7 @@ class ShieldCommand extends Command
 {
     protected static $defaultName = 'facebook:shield';
 
-    protected function configure()
+    protected function configure(): void
     {
         FacebookSession::enableAppSecretProof(false);
         $this->setDescription('Activate avatar protection')
@@ -23,13 +25,13 @@ class ShieldCommand extends Command
             ->addOption('off', null, InputOption::VALUE_NONE, 'Turn off');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            /** @var FacebookSession */
+            /** @var FacebookSession $session */
             $session = new FacebookSession($input->getArgument('token'));
 
-            /** @var FacebookRequest */
+            /** @var FacebookRequest $user */
             $user = (new FacebookRequest($session, 'GET', '/me'))->execute()
                 ->getGraphObject()
                 ->asArray();

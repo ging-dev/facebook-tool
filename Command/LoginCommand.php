@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gingdev\Facebook\Command;
 
 use Goutte\Client;
@@ -11,14 +13,9 @@ use Symfony\Component\Console\Question\Question;
 
 class LoginCommand extends Command
 {
-    const BASE_URL = 'https://mbasic.facebook.com/login';
+    public const BASE_URL = 'https://mbasic.facebook.com/login';
 
-    /**
-     * Browser Kit.
-     *
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     protected static $defaultName = 'facebook:login';
 
@@ -29,7 +26,7 @@ class LoginCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Login to facebook')
             ->setHelp('This command allows you to login to a facebook account...');
@@ -106,10 +103,8 @@ class LoginCommand extends Command
 
     /**
      * Complete login.
-     *
-     * @return void
      */
-    protected function endStep()
+    protected function endStep(): void
     {
         try {
             $this->dontSave();
@@ -120,27 +115,27 @@ class LoginCommand extends Command
         }
     }
 
-    protected function continue()
+    protected function continue(): void
     {
         $this->client->submitForm('submit[Continue]');
         $this->client->submitForm('submit[This was me]');
     }
 
-    protected function dontSave()
+    protected function dontSave(): void
     {
         $this->client->submitForm('submit[Continue]', [
             'name_action_selected' => 'dont_save',
         ]);
     }
 
-    protected function filter($input)
+    protected function filter($input): bool
     {
         $crawler = $this->client->getCrawler()->filter($input);
 
         return $crawler->count() > 0;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->login($input, $output);
