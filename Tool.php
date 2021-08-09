@@ -55,7 +55,7 @@ class Tool
                 ->getCrawler()
                 ->filter('.k.j > form')
                 ->form();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             throw new \LogicException('Cookies have expired or are not valid.');
         }
 
@@ -89,7 +89,7 @@ class Tool
         try {
             $link = $crawler->filter('a[style="display:block"]')->eq($mode)->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 
@@ -103,7 +103,7 @@ class Tool
         try {
             $link = $crawler->filterXPath('//a[contains(@href, "/a/profile.php")]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 
@@ -117,7 +117,7 @@ class Tool
         try {
             $link = $crawler->filter('a[id="pages_follow_action_id"]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 
@@ -131,7 +131,7 @@ class Tool
         try {
             $link = $crawler->filterXPath('//a[contains(@href, "/a/subscribe.php")]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 
@@ -146,7 +146,7 @@ class Tool
             $form = $crawler->filter('form')->form();
             $form->remove('photo'); // watch out for this damn thing
             $this->browser->submit($form, ['comment_text' => $message]);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 
@@ -162,7 +162,7 @@ class Tool
             $link = $crawler->filterXPath('//a[contains(@href, "/composer/mbasic")]')->link();
             $this->browser->click($link);
             $this->browser->submitForm('view_post');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 

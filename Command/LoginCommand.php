@@ -34,10 +34,8 @@ class LoginCommand extends Command
 
     /**
      * Sign in to your account.
-     *
-     * @return void
      */
-    protected function login(InputInterface $input, OutputInterface $output)
+    protected function login(InputInterface $input, OutputInterface $output): void
     {
         $helper = $this->getHelper('question');
 
@@ -59,22 +57,22 @@ class LoginCommand extends Command
 
         if ($this->filter('#checkpoint_title')) {
             if ($this->filter('#approvals_code')) {
-                return $this->nextStep($input, $output);
+                $this->nextStep($input, $output);
+
+                return;
             }
             throw new \RuntimeException('You must enable 2-factor authentication.');
         }
 
         $output->writeln('<fg=red>Login failed, please re-enter</>');
         // Re-login
-        return $this->login($input, $output);
+        $this->login($input, $output);
     }
 
     /**
      * Two-step verification.
-     *
-     * @return void
      */
-    protected function nextStep(InputInterface $input, OutputInterface $output, int $failed = 0)
+    protected function nextStep(InputInterface $input, OutputInterface $output, int $failed = 0): void
     {
         $helper = $this->getHelper('question');
         $question = new Question('Enter 2-FA code: ');
@@ -95,10 +93,12 @@ class LoginCommand extends Command
 
             $output->writeln('<fg=red>The recovery code is not correct, please re-enter it</>');
             // Re-enter the recovery code if it is not correct
-            return $this->nextStep($input, $output, $failed);
+            $this->nextStep($input, $output, $failed);
+
+            return;
         }
 
-        return $this->endStep();
+        $this->endStep();
     }
 
     /**
@@ -110,7 +110,7 @@ class LoginCommand extends Command
             $this->dontSave();
             $this->continue();
             $this->dontSave();
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             // Finish without checking the browser
         }
     }
