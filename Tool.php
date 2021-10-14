@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Gingdev\Facebook;
 
 use Goutte\Client;
-use InvalidArgumentException;
 use Symfony\Component\BrowserKit\CookieJar;
 
 class Tool
@@ -32,7 +31,7 @@ class Tool
 
         $cookies = \json_decode($json, true);
         if (\JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
+            throw new \InvalidArgumentException('json_decode error: '.\json_last_error_msg());
         }
 
         if (!\is_array($cookies)) {
@@ -42,7 +41,7 @@ class Tool
         $cookieJar = new CookieJar();
         $cookieJar->updateFromSetCookie($cookies);
 
-        $this->browser = new Client(null, null, $cookieJar);
+        $this->browser = new Client(cookieJar: $cookieJar);
     }
 
     public function requestAccessToken(): void
@@ -89,7 +88,7 @@ class Tool
         try {
             $link = $crawler->filter('a[style="display:block"]')->eq($mode)->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
@@ -103,7 +102,7 @@ class Tool
         try {
             $link = $crawler->filterXPath('//a[contains(@href, "/a/profile.php")]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
@@ -117,7 +116,7 @@ class Tool
         try {
             $link = $crawler->filter('a[id="pages_follow_action_id"]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
@@ -131,7 +130,7 @@ class Tool
         try {
             $link = $crawler->filterXPath('//a[contains(@href, "/a/subscribe.php")]')->link();
             $this->browser->click($link);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
@@ -146,7 +145,7 @@ class Tool
             $form = $crawler->filter('form')->form();
             $form->remove('photo'); // watch out for this damn thing
             $this->browser->submit($form, ['comment_text' => $message]);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
@@ -162,7 +161,7 @@ class Tool
             $link = $crawler->filterXPath('//a[contains(@href, "/composer/mbasic")]')->link();
             $this->browser->click($link);
             $this->browser->submitForm('view_post');
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return false;
         }
 
