@@ -31,7 +31,7 @@ class ShieldCommand extends Command
             /** @var FacebookSession $session */
             $session = new FacebookSession($input->getArgument('token'));
 
-            /** @var FacebookRequest $user */
+            /** @var string[] */
             $user = (new FacebookRequest($session, 'GET', '/me'))->execute()
                 ->getGraphObject()
                 ->asArray();
