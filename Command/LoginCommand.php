@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Helper\QuestionHelper;
 
 class LoginCommand extends Command
 {
@@ -37,6 +38,7 @@ class LoginCommand extends Command
      */
     protected function login(InputInterface $input, OutputInterface $output): void
     {
+        /** @var QuestionHelper */
         $helper = $this->getHelper('question');
 
         $question = new Question('Enter email: ');
@@ -74,8 +76,11 @@ class LoginCommand extends Command
      */
     protected function nextStep(InputInterface $input, OutputInterface $output, int $failed = 0): void
     {
+        /** @var QuestionHelper */
         $helper = $this->getHelper('question');
         $question = new Question('Enter 2-FA code: ');
+
+        /** @var string */
         $code = $helper->ask($input, $output, $question);
 
         if (strlen($code) >= 32) {
@@ -128,7 +133,7 @@ class LoginCommand extends Command
         ]);
     }
 
-    protected function filter($input): bool
+    protected function filter(string $input): bool
     {
         $crawler = $this->client->getCrawler()->filter($input);
 

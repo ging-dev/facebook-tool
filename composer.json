@@ -20,12 +20,16 @@
     "require-dev": {
         "symfony/http-kernel": "^5.2",
         "symfony/dependency-injection": "^5.2",
-        "symfony/config": "^5.2"
+        "symfony/config": "^5.2",
+        "phpstan/phpstan": "^1.1"
     },
     "autoload": {
         "psr-4": {
             "Gingdev\\Facebook\\": ""
         }
     },
-    "bin": ["Resources/bin/console"]
+    "bin": ["Resources/bin/console"],
+    "scripts": {
+        "phpstan": "phpstan analyse --level 6 Command"
+    }
 }
