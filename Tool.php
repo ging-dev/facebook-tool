@@ -11,6 +11,7 @@ class Tool
 {
     public const TOKEN_URL = 'https://mbasic.facebook.com/dialog/oauth';
 
+    /** @var string[] */
     protected $queryData = [
         'client_id' => '124024574287414',
         'redirect_uri' => 'fbconnect://success',
@@ -81,7 +82,7 @@ class Tool
         return $this->browser;
     }
 
-    public function likePost($id, int $mode = 0): bool
+    public function likePost(string $id, int $mode = 0): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/reactions/picker/?ft_id='.$id);
 
@@ -95,7 +96,7 @@ class Tool
         return true;
     }
 
-    public function likePage($id): bool
+    public function likePage(string $id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -109,7 +110,7 @@ class Tool
         return true;
     }
 
-    public function followPage($id): bool
+    public function followPage(string $id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -123,7 +124,7 @@ class Tool
         return true;
     }
 
-    public function followUser($id): bool
+    public function followUser(string $id): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id.'/about');
 
@@ -137,7 +138,7 @@ class Tool
         return true;
     }
 
-    public function commentPost($id, string $message): bool
+    public function commentPost(string $id, string $message): bool
     {
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/mbasic/comment/advanced/?target_id='.$id.'&at=compose');
 
@@ -152,7 +153,7 @@ class Tool
         return true;
     }
 
-    public function sharePost($id): bool
+    public function sharePost(string $id): bool
     {
         // Nah, I hope there will be a quicker solution
         $crawler = $this->browser->request('GET', 'https://mbasic.facebook.com/'.$id);
