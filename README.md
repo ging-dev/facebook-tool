@@ -5,10 +5,10 @@ Facebook Tool for PHP
 ![GitHub repo size](https://img.shields.io/github/repo-size/ging-dev/facebook-tool?color=c&label=size)
 [![StyleCI](https://github.styleci.io/repos/335948618/shield?branch=main)](https://github.styleci.io/repos/335948618?branch=main)
 
-# Note
+## Note
 This package is in beta, it will be dangerous to use
 
-# Usage
+## Usage
 
 ```sh
 composer require ging-dev/facebook-tool
