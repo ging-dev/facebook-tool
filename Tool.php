@@ -53,7 +53,7 @@ class Tool
         try {
             $form = $this->browser
                 ->getCrawler()
-                ->filter('.k.j > form')
+                ->filter('form')
                 ->form();
         } catch (\InvalidArgumentException) {
             throw new \LogicException('Cookies have expired or are not valid.');
