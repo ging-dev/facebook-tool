@@ -6,6 +6,7 @@ namespace Gingdev\Facebook;
 
 use Goutte\Client;
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\Response;
 
 class Tool
 {
@@ -19,7 +20,7 @@ class Tool
         'response_type' => 'token',
     ];
 
-    protected string $accessToken;
+    protected ?string $accessToken = null;
 
     protected Client $browser;
 
@@ -39,6 +40,7 @@ class Tool
             throw new \RuntimeException("Invalid cookie file: {$filename}");
         }
 
+        /** @var string[] $cookies */
         $cookieJar = new CookieJar();
         $cookieJar->updateFromSetCookie($cookies);
 
@@ -61,18 +63,22 @@ class Tool
 
         $this->browser->submit($form);
 
-        $location = $this->browser->getResponse()
-            ->getHeader('location');
+        /** @var Response */
+        $resp = $this->browser->getResponse();
+
+        /** @var string */
+        $location = $resp->getHeader('location');
 
         parse_str(
             parse_url($location, PHP_URL_FRAGMENT),
             $data
         );
 
-        $this->accessToken = $data['access_token'];
+        \assert(\is_string($data['access_token']));
+        $this->accessToken = $data['access_token'] ?? null;
     }
 
-    public function getAccessToken(): string
+    public function getAccessToken(): ?string
     {
         return $this->accessToken;
     }

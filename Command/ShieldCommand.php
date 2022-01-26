@@ -6,6 +6,7 @@ namespace Gingdev\Facebook\Command;
 
 use Facebook\FacebookRequest;
 use Facebook\FacebookSession;
+use Facebook\GraphObject;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,12 +30,13 @@ class ShieldCommand extends Command
     {
         try {
             /** @var FacebookSession $session */
-            $session = new FacebookSession($input->getArgument('token'));
+            $session = new FacebookSession((string) $input->getArgument('token'));
 
-            /** @var string[] */
-            $user = (new FacebookRequest($session, 'GET', '/me'))->execute()
-                ->getGraphObject()
-                ->asArray();
+            /** @var GraphObject */
+            $graphObj = (new FacebookRequest($session, 'GET', '/me'))
+                ->execute()
+                ->getGraphObject();
+            $user = $graphObj->asArray();
         } catch (\Throwable $e) {
             $output->writeln('<fg=red>'.$e->getMessage().'</>');
 
@@ -55,7 +57,7 @@ class ShieldCommand extends Command
 
         $client->request('POST', 'https://graph.facebook.com/graphql', [
             'headers' => [
-                'Authorization' => 'OAuth '.$input->getArgument('token'),
+                'Authorization' => 'OAuth '.(string) $input->getArgument('token'),
             ],
             'body' => [
                 'variables' => json_encode($data),

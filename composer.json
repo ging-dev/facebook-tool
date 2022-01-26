@@ -21,7 +21,8 @@
         "symfony/http-kernel": "^5.2",
         "symfony/dependency-injection": "^5.2",
         "symfony/config": "^5.2",
-        "phpstan/phpstan": "^1.1"
+        "phpstan/phpstan": "^1.1",
+        "vimeo/psalm": "^4.18"
     },
     "autoload": {
         "psr-4": {

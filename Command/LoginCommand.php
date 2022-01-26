@@ -7,10 +7,10 @@ namespace Gingdev\Facebook\Command;
 use Goutte\Client;
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Helper\QuestionHelper;
 
 class LoginCommand extends Command
 {
@@ -42,12 +42,14 @@ class LoginCommand extends Command
         $helper = $this->getHelper('question');
 
         $question = new Question('Enter email: ');
+        /** @var string */
         $email = $helper->ask($input, $output, $question);
 
         $question = new Question('Enter password: ');
         $question->setHidden(true);
         $question->setHiddenFallback(false);
 
+        /** @var string */
         $password = $helper->ask($input, $output, $question);
 
         $this->client->request('GET', self::BASE_URL);
