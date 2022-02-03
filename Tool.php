@@ -20,7 +20,7 @@ class Tool
         'response_type' => 'token',
     ];
 
-    protected ?string $accessToken = null;
+    protected string $accessToken = '';
 
     protected Client $browser;
 
@@ -74,11 +74,10 @@ class Tool
             $data
         );
 
-        \assert(\is_string($data['access_token']));
-        $this->accessToken = $data['access_token'] ?? null;
+        $this->accessToken = (string) $data['access_token'];
     }
 
-    public function getAccessToken(): ?string
+    public function getAccessToken(): string
     {
         return $this->accessToken;
     }

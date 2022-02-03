@@ -42,15 +42,14 @@ class LoginCommand extends Command
         $helper = $this->getHelper('question');
 
         $question = new Question('Enter email: ');
-        /** @var string */
-        $email = $helper->ask($input, $output, $question);
+
+        $email = (string) $helper->ask($input, $output, $question);
 
         $question = new Question('Enter password: ');
         $question->setHidden(true);
         $question->setHiddenFallback(false);
 
-        /** @var string */
-        $password = $helper->ask($input, $output, $question);
+        $password = (string) $helper->ask($input, $output, $question);
 
         $this->client->request('GET', self::BASE_URL);
 
@@ -82,8 +81,7 @@ class LoginCommand extends Command
         $helper = $this->getHelper('question');
         $question = new Question('Enter 2-FA code: ');
 
-        /** @var string */
-        $code = $helper->ask($input, $output, $question);
+        $code = (string) $helper->ask($input, $output, $question);
 
         if (strlen($code) >= 32) {
             $code = (new GoogleAuthenticator())->getCode($code);
